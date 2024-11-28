@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import useDebounce from './helpers/useDebounce';
-const axios = require("axios");
+import useDebounce from "./helpers/useDebounce";
+import axios from "axios";
 
 function App() {
   const [query, setQuery] = useState("");
@@ -23,21 +23,24 @@ function App() {
   };
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["books", query, page, pageSize],
+    queryKey: ["books", debouncedSearch, page, pageSize],
     queryFn: () => fetchBooks(debouncedSearch),
     keepPreviousData: true,
-    enabled: !!query, // Only fetch if there's a query
+    enabled: !!debouncedSearch, // Only fetch if there's a query
+    onSuccess: (data) => console.log("Query Success:", data),
+    onError: (error) => console.error("Query Error:", error),
   });
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    setPage(0); // Reset to first page on new search
-    console.log("changing search ", query);
-  };
+  useEffect(() => {
+    setPage(0); // Reset to first page when debounced search changes
+    // console.log("Query:", query);
+    // console.log("Debounced Search:", debouncedSearch);
+  }, [debouncedSearch]);
 
+  // console.log({ isLoading });
   return (
     <div className="p-4">
-      <form onSubmit={handleSearch} className="mb-4">
+      <form onSubmit={(e) => e.preventDefault()} className="mb-4">
         <input
           type="text"
           value={query}
@@ -45,7 +48,11 @@ function App() {
           placeholder="Search for books"
           className="border p-2 mr-2"
         />
-        <button type="submit" className="bg-blue-500 text-white p-2">
+        <button
+          onClick={() => setPage(0)}
+          type="submit"
+          className="bg-blue-500 text-white p-2"
+        >
           Search
         </button>
       </form>

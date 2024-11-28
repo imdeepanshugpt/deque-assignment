@@ -26,13 +26,3 @@ global.TransformStream =
       throw new Error("TransformStream is not supported in this environment");
     }
   };
-
-global.fetch = jest.fn(() =>
-  Promise.resolve({
-    json: () =>
-      Promise.resolve({
-        totalResults: 50,
-        books: [],
-      }),
-  })
-);
