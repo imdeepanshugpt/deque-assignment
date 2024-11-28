@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import useDebounce from './helpers/useDebounce';
+const axios = require("axios");
 
 function App() {
   const [query, setQuery] = useState("");
@@ -28,8 +28,6 @@ function App() {
     keepPreviousData: true,
     enabled: !!query, // Only fetch if there's a query
   });
-
-  console.log({error});
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -70,7 +68,7 @@ function App() {
       {isLoading ? (
         <p>Loading...</p>
       ) : error ? (
-        <p>Error fetching data</p>
+        <p data-testid="error-message">Error fetching data</p>
       ) : data ? (
         <div>
           <p>Total Results: {data.totalResults}</p>
